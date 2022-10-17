@@ -1,4 +1,8 @@
-# TP_reseaux
+# TP_reseaux  
+
+## Membres du groupe  
+Loïcia KOEHL  
+Alix HAVRET  
 
 Configuration de la STM32 : 
 UART 1 
