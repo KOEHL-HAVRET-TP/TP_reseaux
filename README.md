@@ -1,4 +1,6 @@
 # TP_reseaux  
+![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/1c0eb2716b6b108aca59cb3854894e1de56df6ac/Images/schema_projet_bus_et_reseaux.JPG)
+
 
 ## Membres du groupe  
 Loïcia KOEHL  
