@@ -12,7 +12,7 @@ UART 2
 I2C 
 
 
-## TP1 - Bus I2C
+## TP1 - Interrogation des capteurs par le bus I2C
 
 ### 1.  Capteur BMP280
     
@@ -39,19 +39,24 @@ I2C
     fonction de calcul pour la pression : double bmp280_compensate_P_double(BMP280_S32_t adc_P)
     fonction de calcul pour la température : double bmp280_compensate_T_double(BMP280_S32_t adc_T) 
 
-## TP2 - Interfaçage STM32 - Raspberry
+## TP2 - Interfaçage STM32 - Raspberry Pi
 
 A l'aide du logiciel Rasberry Pi Imager nous allons télécharger une image sur le carte SD, qui sera ensuite sur la raspberry. Une fois la rasberry alimentée et avec la carte SD elle va chercher à se connecter à un réseau que nous avons configuré dans l'image. C'est en se connectant au routeur que la rasberry obtient une adresse IP.
 
 Pour éviter tout piratage il est necessaire d'être vigilent dans la configuration de l'image que l'on télécharge sur la carte SD, et notamment au mot de passe. Une fois connectée au réseau la rasberry est facilement piratable et son adresse IP peut être récupérée très facilement et rapidement.
 
-Une fois la rasberry connectée on obtient une adresse IP : 192.168.88.241
+Une fois la rasberry connectée on obtient __une adresse IP : 192.168.88.241__
 
-Dans un terminal : 
+__Dans un terminal :__
 La commande ssh@192.168.88.241 nous fait entrer dans la rasberry.
+Une fois dans la raspberry il est possible de : 
+- créer des dossiers 
+- créer des fichiers 
+- écrire dans des fichiers
+- éxecuter du code
 
 
-Installation de minicom :
+__Installation de minicom :__
 
 sudo apt install minicom
 minicom -D /dev/ttyAMA0
@@ -59,9 +64,9 @@ minicom -D /dev/ttyAMA0
 
 
 
-## TP3 - Interface REST
+## TP3 - Interface Web sur Raspberry Pi
 
-## TP4 - Bus CAN
+## TP4 - Interface API Rest & pilotage d'actionneur par bus CAN
 
 
 ## TP5 - Intégration I²C - Serial - REST - CAN
