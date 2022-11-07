@@ -55,16 +55,18 @@ Une fois dans la raspberry il est possible de :
 - écrire dans des fichiers
 - éxecuter du code
 
-
 __Installation de minicom :__
 
 sudo apt install minicom
 minicom -D /dev/ttyAMA0
 
 
-
-
 ## TP3 - Interface Web sur Raspberry Pi
+Sur la raspberry pi on a un utilisateur par déa=faut qui est celui nous permettant de nous connecter en réseau à cette dernière.  
+On va créer un nouvel utilisateur et l'utiliser pour les prochaines étapes.  
+
+On crée un premier fichier Web "hello.py" qui contiendra le code du serveur Web nous permettant d'observer les résultats et de débugger.  Ce serveur sera à l'adresse __http://127.0.0.1:5000__.  
+
 
 ## TP4 - Interface API Rest & pilotage d'actionneur par bus CAN
 
