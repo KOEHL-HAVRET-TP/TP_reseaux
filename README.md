@@ -7,10 +7,7 @@ Loïcia KOEHL
 Alix HAVRET  
 
 Configuration de la STM32 : 
-UART 1 
-UART 2
-I2C 
-
+![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Pinout.JPG)
 
 ## TP1 - Interrogation des capteurs par le bus I2C
 
