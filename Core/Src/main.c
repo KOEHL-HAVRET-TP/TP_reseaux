@@ -49,6 +49,9 @@
 /* USER CODE BEGIN PV */
 char buffer[10];
 extern int pt;
+uint8_t aData[8];
+uint32_t pTxMailbox;
+extern CAN_TxHeaderTypeDef pHeader;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,6 +99,8 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+
+
 	/*char buffer[100];
 	int max_len = sizeof(buffer);
 	int ch = '1';
@@ -112,17 +117,33 @@ int main(void)
 	BMP280_check();
 	printf("\r\nConfigure BMP280\r\n");
 	BMP280_init();
+
+
+	//bus CAN
+
+	HAL_CAN_Start(&hcan1);
+
+	aData[0]=0x5A; //90 degres
+	aData[1]=0x01; //négatif
+	HAL_CAN_AddTxMessage(&hcan1, &pHeader, aData, &pTxMailbox);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		BMP280_get_temperature();
-		BMP280_get_pressure();
+		aData[1]=0;
+		HAL_CAN_AddTxMessage(&hcan1, &pHeader, aData, &pTxMailbox);
+		HAL_Delay(1000);
+		aData[1]=1;
+		HAL_CAN_AddTxMessage(&hcan1, &pHeader, aData, &pTxMailbox);
+
+		//BMP280_get_temperature();
+		//BMP280_get_pressure();
 		//HAL_UART_Transmit(&huart1, "Hello i'm nucleo board\r\n", 24, HAL_MAX_DELAY);
-		HAL_UART_Receive_IT(&huart2, buffer, sizeof(buffer),HAL_MAX_DELAY);
-		HAL_UART_Transmit(&huart1, buffer[0], 24, HAL_MAX_DELAY);
+		//HAL_UART_Receive_IT(&huart2, buffer, sizeof(buffer),HAL_MAX_DELAY);
+		//HAL_UART_Transmit(&huart1, buffer[0], 24, HAL_MAX_DELAY);
 		//printf('pointeur=%d',pt);
 		HAL_Delay(1000);
 
@@ -154,7 +175,13 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 80;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLR = 2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -164,12 +191,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
