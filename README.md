@@ -45,7 +45,7 @@ On visualise les registres correspondant pour vérifier la bonne écriture au se
 ### Récupération de l'étalonnage, de la température et de la pression
 Les valeurs de calibration se trouvent sur 25 adresses différentes. Nous avons dans la datasheet 13 valeurs de calibration :  
     
-![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Pinout.JPG)
+![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/d189c1ce48d0a862748fe9128b01a61a3e405018/Images/calibration_data.JPG)
     
 On vérifie la valeur de ces dernières, elles seront utiles dans le calcul de temperatures et de pressions.  
     
