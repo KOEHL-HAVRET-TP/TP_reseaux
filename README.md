@@ -41,6 +41,8 @@ Configuration de la STM32 :
 ### Configuration du BPM280
 Pour utiliser le BMP380 on configure les modes à l'aide des adresses trouvées précédemment. L'ensemble des adresses seront initialisées au début du code pour          simplifier sa lecture  
 On visualise les registres correspondant pour vérifier la bonne écriture au sein de ces derniers.  
+
+Configuration du BMP280 : mode normal, Pressure oversampling x16, Temperature oversampling x2
      
 ### Récupération de l'étalonnage, de la température et de la pression
 Les valeurs de calibration se trouvent sur 25 adresses différentes. Nous avons dans la datasheet 13 valeurs de calibration :  
@@ -51,19 +53,19 @@ On vérifie la valeur de ces dernières, elles seront utiles dans le calcul de t
     
 ### Calcul des températures et des pressions compensées
 La datasheet nous fournit 2 codes pour le calcul de la température et de la pression. On utilise ces derniers.  
-Dans un premier temps, la temparture et la pression étaient à 0. On utilise le mode debug de CubeIDE pour trouvé le problème.
+Dans un premier temps, la temparture et la pression étaient à 0. On utilise le mode debug de CubeIDE pour trouver le problème.
     
-Dans l'idée : jeudi ça fonctionne 
-    
-Objectif final : L'accéléromètre nous servira de base. Une fois la vitesse récupérée de l'IMU 10 DOF , cette dernière sera envoyée sur le servomoteur pour, contrôler sa vitesse.
+Afin de continuer les tests sur le capteur innertiel nous avons utilisé la carte STM32F746NG Discovery pour débugger le capteur inertiel.  Les valeurs ne s'affichant pas nous affichons au fur et à mesure les étapes de calcul. Transformer le température finale et la pression finale en Float nous permet d'obtenir des valeurs.  
+Finalement, nous obtenons une valeur en sortie pour la température, mais 0 pour la valeur de la pression.  
 
 ## TP2 - Interfaçage STM32 - Raspberry Pi
 
-A l'aide du logiciel Rasberry Pi Imager nous allons télécharger une image sur le carte SD, qui sera ensuite sur la raspberry. Une fois la rasberry alimentée et avec la carte SD elle va chercher à se connecter à un réseau que nous avons configuré dans l'image. C'est en se connectant au routeur que la rasberry obtient une adresse IP.
+On flash l'image "Raspberry Pi OS (32-bit) Lite" sur la carte sd de la raspberry pi.  
+Une fois la rasberry alimentée et avec la carte SD, elle va chercher à se connecter à un réseau que nous avons configuré dans l'image. C'est en se connectant au routeur que la rasberry obtient une adresse IP.
 
 Pour éviter tout piratage il est necessaire d'être vigilent dans la configuration de l'image que l'on télécharge sur la carte SD, et notamment au mot de passe. Une fois connectée au réseau la rasberry est facilement piratable et son adresse IP peut être récupérée très facilement et rapidement.
 
-Une fois la rasberry connectée on obtient __une adresse IP : 192.168.88.241__
+Une fois la rasberry connectée on obtient __une adresse IP : 192.168.88.241__ (mdp : Mamy&papy)
 
 __Dans un terminal :__
 La commande ssh@192.168.88.241 nous fait entrer dans la rasberry.
@@ -74,9 +76,10 @@ Une fois dans la raspberry il est possible de :
 - éxecuter du code
 
 __Installation de minicom :__
-
 sudo apt install minicom
-minicom -D /dev/ttyAMA0
+minicom -D /dev/ttyAMA0  
+Minicom nous permettra, dans l'invite de commande, d'écrire en python sur la raspberry.  
+Pour entrer et communiquer avec la raspberry on peut utiliser Putty.  
 
 
 ## TP3 - Interface Web sur Raspberry Pi et interface API Rest
@@ -86,21 +89,28 @@ __Vocabulaire :__
 - app :application Flask
 - route : en developpement Web la route est une URL qui conduit vers l'execution d'une fonction (pour exécuter cette fonction on devra se trouver sur la route/l'URL correspondant), il est possibile de paramétrer nos routes
 - def : dans nos routes nous définiront notre fonction qui s'executera lorsque nous seront sur cette route
+- API Restful : API Rest baser sur le protocole HTTP
+
+Mettre image d'un chemin 
 
 Sur la raspberry pi on a un utilisateur par défaut qui est celui nous permettant de nous connecter en réseau à cette dernière.  
 On va créer un nouvel utilisateur et l'utiliser pour les prochaines étapes.  
 __nouvel utilisateur__
 user : alixloicia
+mdp : Mamy&papy
 
-On crée un premier fichier Web "hello.py" qui contiendra le code du serveur Web nous permettant d'observer les résultats et de débugger.  Ce serveur sera à l'adresse __http://192.168.88.241 :5000__.  
+On crée un premier fichier Web "hello.py" qui contiendra le code du serveur Web nous permettant d'observer les résultats et de débugger.  Ce serveur sera à l'adresse __http://192.168.88.241:5000.__ (On spécifie le port 5000 sur le navigateur, car de base le port html utilisé sur le web est le port 80).  
+
+`FLASK_APP=hello.py FLASK_ENV=development flask run --host 0.0.0.0` nous permet de lancer le mode debug et d'ouvrir notre serveur WEB avec un navigateur.  
 
 
-Notre serveur devra être RESTful, il devra être sous forme Json et différencier les différentes méthodes HTTP.  
-Le json est un type de fichier simple à générer et facile à lire et à traiter. 
+On va créer notre première page selon l’architecture REST (qui utilise la méthode HTML)  
+Comment être RESTful? Pour notre serveur cela signifie :
+- répondre sous forme JSON (Le json est un type de fichier simple à générer et facile à lire et à traiter)
+- différencier les méthodes HTTP  
 
 On utilise l'extension RESTED de firefox afin d'oberver les retours des différentes méthodes (GET, POST, PUT, etc) que l'on implémente sur la rasberry.  
-Pour faire nos tests, nous devront nous placer sur la bonne adresse correspondant à la "fonction" testée. ?? 
- 
+
 
 ## TP4 -Pilotage d'actionneur par bus CAN
 
