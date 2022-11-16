@@ -99,6 +99,10 @@ mdp : Mamy&papy
 
 On crée un premier fichier Web "hello.py" qui contiendra le code du serveur Web nous permettant d'observer les résultats et de débugger.  Ce serveur sera à l'adresse __http://192.168.88.241:5000.__ (On spécifie le port 5000 sur le navigateur, car de base le port html utilisé sur le web est le port 80).  
 
+![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/c47e75433dcdda6c99ff7cbd1ccf5af633321379/Images/Ligne_de_commande_FLASK.JPG) 
+La commande ci-dessus, nous permet de démarrer notre serveur sans debug.  
+
+
 `FLASK_APP=hello.py FLASK_ENV=development flask run --host 0.0.0.0` nous permet de lancer le mode debug et d'ouvrir notre serveur WEB avec un navigateur.  
 
 
@@ -108,9 +112,14 @@ Comment être RESTful? Pour notre serveur cela signifie :
 - différencier les méthodes HTTP  
 
 On utilise l'extension RESTED de firefox afin d'oberver les retours des différentes méthodes (GET, POST, PUT, etc) que l'on implémente sur la rasberry.  
+L’utilisation de json avec flask est très fréquente, donc une fonction jsonify() existe dans la bibliothèque. Elle est accessible après un from flask import jsonify. Cette fonction gère à la fois la conversion en json et l’ajout de l’entête. On utilisera jsonify dans l'ensemble de notre code.  
+Nos premiers tests consistaient à insérer 
 
+Voici un exemple de code noue permettant d'instancier des requetes. On y retrouve le chemin dans "@app route", et la fonction dans "def". 
+![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Code_api_welcome.JPG)  
 
-![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Code_api_welcome.JPG)
+Pour l'ensemble de nos requetes on utilise le fichier json pour l'affichage.  
+Les requetes auront pour but d'être utilisées pour afficher /modifier/donner les valeurs de température et de pression de l'IMU 10 DOF.
 
 
 
