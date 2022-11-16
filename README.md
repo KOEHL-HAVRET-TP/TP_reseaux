@@ -91,8 +91,6 @@ __Vocabulaire :__
 - def : dans nos routes nous définiront notre fonction qui s'executera lorsque nous seront sur cette route
 - API Restful : API Rest baser sur le protocole HTTP
 
-![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Code_api_welcome.JPG)
-
 Sur la raspberry pi on a un utilisateur par défaut qui est celui nous permettant de nous connecter en réseau à cette dernière.  
 On va créer un nouvel utilisateur et l'utiliser pour les prochaines étapes.  
 __nouvel utilisateur__
@@ -110,6 +108,10 @@ Comment être RESTful? Pour notre serveur cela signifie :
 - différencier les méthodes HTTP  
 
 On utilise l'extension RESTED de firefox afin d'oberver les retours des différentes méthodes (GET, POST, PUT, etc) que l'on implémente sur la rasberry.  
+
+
+![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Code_api_welcome.JPG)
+
 
 
 ## TP4 -Pilotage d'actionneur par bus CAN
