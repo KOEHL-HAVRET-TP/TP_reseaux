@@ -1,14 +1,15 @@
 /*
- * BMP280.c
+*BMP280.c
  *
- *  Created on: Oct 3, 2020
- *      Author: cbares
+* Created on: Oct 3, 2020
+*     Author: cbares
  */
 
 #include "stdio.h"
 #include "stdlib.h"
 
 #include "main.h"
+
 #include "BMP280_simple.h"
 
 extern I2C_HandleTypeDef hi2c1;
@@ -26,7 +27,27 @@ int16_t dig_P7;
 int16_t dig_P8;
 int16_t dig_P9;
 
+
+uint32_t Timeout = 10000;
+uint32_t Timeout1 = 1000;
+uint8_t buf[10];
+uint8_t buf1[10];
+
+
 BMP280_S32_t t_fine;
+
+void main_comm(){
+
+	//Lecture Id
+	HAL_I2C_Mem_Read(&hi2c1, ADDRESS_BMP280, ADDRESS_ID, I2C_MEMADD_SIZE_8BIT, buf, 1, Timeout1);
+
+	//Configuration BMP280
+	buf1[0]=3;
+	HAL_I2C_Mem_Write(&hi2c1,ADDRESS_BMP280,ADDRESS_POWER_MODES,I2C_MEMADD_SIZE_8BIT,buf1,2,Timeout1);
+	HAL_I2C_Mem_Read(&hi2c1,ADDRESS_BMP280,ADDRESS_POWER_MODES,I2C_MEMADD_SIZE_8BIT,buf,2,Timeout1);
+
+}
+
 
 int BMP280_check() {
 	uint8_t buf[1];
@@ -71,6 +92,26 @@ int BMP280_init() {
 	return 0;
 }
 
+void BMP280_get_calib_values(void)
+{
+	uint8_t rx_buff[24];
+
+	HAL_I2C_Mem_Read(&hi2c1, ADDRESS_BMP280, ADDRESS_CALIB_00, I2C_MEMADD_SIZE_8BIT, &rx_buff[0], 24, Timeout);
+
+	dig_T1=(rx_buff[0])+(rx_buff[1]<<8);
+	dig_T2=(rx_buff[2])+(rx_buff[3]<<8);
+	dig_T3=(rx_buff[4])+(rx_buff[5]<<8);
+	dig_P1=(rx_buff[6])+(rx_buff[7]<<8);
+	dig_P2=(rx_buff[8])+(rx_buff[9]<<8);
+	dig_P3=(rx_buff[10])+(rx_buff[11]<<8);
+	dig_P4=(rx_buff[12])+(rx_buff[13]<<8);
+	dig_P5=(rx_buff[14])+(rx_buff[15]<<8);
+	dig_P6=(rx_buff[16])+(rx_buff[17]<<8);
+	dig_P7=(rx_buff[18])+(rx_buff[19]<<8);
+	dig_P8=(rx_buff[20])+(rx_buff[21]<<8);
+	dig_P9=(rx_buff[22])+(rx_buff[23]<<8);
+}
+
 int BMP280_Write_Reg(uint8_t reg, uint8_t value) {
 	uint8_t buf[3];
 	HAL_StatusTypeDef ret;
@@ -104,8 +145,7 @@ uint8_t* BMP280_Read_Reg(uint8_t reg, uint8_t length) {
 	}
 
 	buf = (uint8_t*) malloc(length);
-	ret = HAL_I2C_Master_Receive(&hi2c1, BMP280_ADDR, buf, length,
-			HAL_MAX_DELAY);
+	ret = HAL_I2C_Master_Receive(&hi2c1, BMP280_ADDR, buf, length, HAL_MAX_DELAY);
 	if (ret != 0) {
 		printf("Problem with I2C Receive\r\n");
 	}
@@ -120,12 +160,24 @@ BMP280_S32_t BMP280_get_temperature() {
 	buf = BMP280_Read_Reg(BMP280_TEMP_REG_MSB, BMP280_TEMP_LEN);
 
 	adc_T = ((BMP280_S32_t) (buf[0]) << 12) | ((BMP280_S32_t) (buf[1]) << 4)
-			| ((BMP280_S32_t) (buf[2]) >> 4);
+		| ((BMP280_S32_t) (buf[2]) >> 4);
+
+	printf("ADC temperature : %li\r\n",adc_T);
+
+	double var1, var2;
+	float T;
+	var1 = (((double)adc_T)/16384.0-((double)dig_T1)/1024.0)*((double)dig_T2);
+	printf("Var1 : %f\r\n", var1);
+	var2 = ((((double)adc_T)/131072.0-((double)dig_T1)/8192.0)*(((double)adc_T)/131072.0-((double) dig_T1)/8192.0))*((double)dig_T3);
+	t_fine = (BMP280_S32_t)(var1 + var2);
+	printf("tfine : %li",t_fine);
+	T = (var1 + var2)/5120.0;
 
 	free(buf);
 
 	printf("Temperature: ");
-	printf("0X%05lX", adc_T);
+	printf("%f", T);
+
 	printf("\r\n");
 
 	return adc_T;
@@ -139,12 +191,30 @@ int BMP280_get_pressure() {
 
 	adc_P = ((BMP280_S32_t) (buf[0]) << 12) | ((BMP280_S32_t) (buf[1]) << 4)
 			| ((BMP280_S32_t) (buf[2]) >> 4);
+	printf("ADC pressure : %li\r\n", adc_P);
+
+	double var1, var2;
+	float P;
+	var1 = ((double)t_fine/2.0)-64000.0;
+	var2 = var1*var1*((double)dig_P6)/32768.0;
+	var2 = var2 + var1*((double)dig_P5)*2.0;
+	var2 = (var2/4.0)+(((double)dig_P4)*65536.0);
+	var1 = (((double)dig_P3)*var1*var1/524288.0+((double)dig_P2)*var1)/524288.0;
+	var1 = (1.0+var1/32768.0)*((double)dig_P1);
+	if (var1==0.0)
+	{
+	return 0; // avoid exception caused by division by zero
+	}
+	P = 1048576.0-(double)adc_P;
+	P = (P-(var2/4096.0))*6250.0/var1;
+	var1 = ((double)dig_P9)*P*P/2147483648.0;
+	var2 = P*((double)dig_P8)/32768.0;
+	P = P+(var1+var2+((double)dig_P7))/16.0;
 
 	free(buf);
 
-	printf("Pressure:    0x");
-	printf("%05lX", adc_P);
-	printf("\r\n");
+	printf("Pressure:    ");
+	printf("%f\r\n", P);
 
 	return 0;
 }
