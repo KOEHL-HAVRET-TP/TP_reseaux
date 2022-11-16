@@ -58,6 +58,23 @@ Dans un premier temps, la temparture et la pression étaient à 0. On utilise le
 Afin de continuer les tests sur le capteur innertiel nous avons utilisé la carte STM32F746NG Discovery pour débugger le capteur inertiel.  Les valeurs ne s'affichant pas nous affichons au fur et à mesure les étapes de calcul. Transformer le température finale et la pression finale en Float nous permet d'obtenir des valeurs.  
 Finalement, nous obtenons une valeur en sortie pour la température, mais 0 pour la valeur de la pression.  
 
+### Fonctions si pData == GET_T, etc ...
+possibilité de code (pas dans le projet CubeIDE) , inspiré des appels de commande dans le TP automatique.
+<pre><code>void read_command(){  
+	char data[10];  
+	if (strcmp((char *)command,"GET_T")==0){  
+		int32_t temp = BMP280_get_temperature();  
+		sprintf(data,"valeur de temperature : %d/n/r",temp);  
+		HAL_UART_Transmit(&huart1,(uint8_t *) &data, 9, 0xFFFF);  
+	}  
+	if (strcmp((char *)command,"GET_P")==0){  
+		int32_t press = BMP280_get_pressure();  
+		sprintf(data,"valeur de pression : %d/n/r",press);  
+		HAL_UART_Transmit(&huart1,(uint8_t *) &data, 9, 0xFFFF);  
+	}  
+}  </code></pre>
+
+
 ## TP2 - Interfaçage STM32 - Raspberry Pi
 
 On flash l'image "Raspberry Pi OS (32-bit) Lite" sur la carte sd de la raspberry pi.  
@@ -83,17 +100,16 @@ Pour entrer et communiquer avec la raspberry on peut utiliser Putty.
 
 
 ## TP3 - Interface Web sur Raspberry Pi et interface API Rest
-
-__Vocabulaire :__  
-- Flask : framework web Python avec divers fonctionnalités
-- app :application Flask
-- route : en developpement Web la route est une URL qui conduit vers l'execution d'une fonction (pour exécuter cette fonction on devra se trouver sur la route/l'URL correspondant), il est possibile de paramétrer nos routes
-- def : dans nos routes nous définiront notre fonction qui s'executera lorsque nous seront sur cette route
-- API Restful : API Rest baser sur le protocole HTTP
+### Vocabulaire :  
+- __Flask__ : framework web Python avec divers fonctionnalités
+- __app__ :application Flask
+- __route__ : en developpement Web la route est une URL qui conduit vers l'execution d'une fonction (pour exécuter cette fonction on devra se trouver sur la route/l'URL correspondant), il est possibile de paramétrer nos routes
+- __def__ : dans nos routes nous définiront notre fonction qui s'executera lorsque nous seront sur cette route
+- __API Restful__ : API Rest baser sur le protocole HTTP
 
 Sur la raspberry pi on a un utilisateur par défaut qui est celui nous permettant de nous connecter en réseau à cette dernière.  
 On va créer un nouvel utilisateur et l'utiliser pour les prochaines étapes.  
-__nouvel utilisateur__
+__nouvel utilisateur__  
 user : alixloicia
 mdp : Mamy&papy
 
@@ -113,9 +129,8 @@ Comment être RESTful? Pour notre serveur cela signifie :
 
 On utilise l'extension RESTED de firefox afin d'oberver les retours des différentes méthodes (GET, POST, PUT, etc) que l'on implémente sur la rasberry.  
 L’utilisation de json avec flask est très fréquente, donc une fonction jsonify() existe dans la bibliothèque. Elle est accessible après un from flask import jsonify. Cette fonction gère à la fois la conversion en json et l’ajout de l’entête. On utilisera jsonify dans l'ensemble de notre code.  
-Nos premiers tests consistaient à insérer 
 
-Voici un exemple de code noue permettant d'instancier des requetes. On y retrouve le chemin dans "@app route", et la fonction dans "def". 
+Voici un exemple de code noue permettant d'instancier des requetes. On y retrouve le chemin dans "@app.route", les différentes requêtes dans "methods", la fonction et les ordres à éxecuter selon les requêtes appelées dans "def". 
 ![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Code_api_welcome.JPG)  
 
 Pour l'ensemble de nos requetes on utilise le fichier json pour l'affichage.  
@@ -125,8 +140,21 @@ Les requetes auront pour but d'être utilisées pour afficher /modifier/donner l
 
 ## TP4 -Pilotage d'actionneur par bus CAN
   
-Nous avons configuré le bus CAN avec un prescaler (for Time Quantum) pour modifier le Baud Rate et l'approcher de 500kbit/s. Or nous avons remarqué plus tard qu'il fallait se mettre exactement à 500 kbit/s pour que la trame CAN soit transmise.
-Nous avons changé l'horloge HCLK à 80 MHz pour que APB1 peripheral clocks (CAN1 est sur APB1) soit à 40 MHz. Avec un prescaler de 16, on obtient un baud rate de 500 kbit/s.  
-Nous avons récupéré la trame du CAN sur l'oscilloscope avec une qualité faible.
+Nous avons configuré le bus CAN avec un prescaler (for Time Quantum) pour modifier le Baud Rate et l'approcher de 500kbit/s. Or nous avons remarqué plus tard qu'il fallait se mettre exactement à 500 kbit/s pour que la trame CAN soit transmise.  
+Nous avons changé l'horloge HCLK à 80 MHz pour que APB1 peripheral clocks (CAN1 est sur APB1) soit à 40 MHz. Avec un prescaler de 16, on obtient un baud rate de 500 kbit/s.    
+Nous avons récupéré la trame du CAN sur l'oscilloscope avec une qualité faible.  
 
 ## TP5 - Intégration I²C - Serial - REST - CAN
+
+Nous n'avons pas pu intégrer l'ensemble des élèments ensemble par manque de temps mais également car certaines de nos parties n'étaient pas totalement complètes :  
+
+__I2C__ :
+- Nous n'obtenions que une température (constance tout du long de nos tests)
+- Nous n'avons pas crée les fonctions pour la lecture des commandes GET_T, GET_P etc 
+__Interface Web__ : 
+- notre inferface et nos requetes avaient un bon fonctionnement, et aurait pu être utilisée pour d'autres situations 
+- nous n'avons pas cherché à aller plus loin en créant une FASTAPI
+__CAN__ :
+- le servomoteur recevait bien les commandes du CAN et il y répondait correctement.
+- Nous n'avont pas eu le temps d'envoyer les valeurs de l'IMU 10DOF vers le servomoteur 
+
