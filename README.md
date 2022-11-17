@@ -6,12 +6,13 @@
 Loïcia KOEHL  
 Alix HAVRET  
 
-Configuration de la STM32 : 
+Configuration de la STM32 :   
+
 ![alt text](https://github.com/KOEHL-HAVRET-TP/TP_reseaux/blob/main/Images/Pinout.JPG)
 
 ## TP1 - Interrogation des capteurs par le bus I2C
 
-### 1.  Capteur BMP280
+### Capteur BMP280
     
 - **Les adresses I²C possibles pour ce composant**  
     Les adresses possibles : 0x76 (GND) et 0x77 (VDDIO)
@@ -74,7 +75,6 @@ possibilité de code (pas dans le projet CubeIDE) , inspiré des appels de comma
 	}  
 }  </code></pre>
 
-
 ## TP2 - Interfaçage STM32 - Raspberry Pi
 
 On flash l'image "Raspberry Pi OS (32-bit) Lite" sur la carte sd de la raspberry pi.  
@@ -98,7 +98,6 @@ minicom -D /dev/ttyAMA0
 Minicom nous permettra, dans l'invite de commande, d'écrire en python sur la raspberry.  
 Pour entrer et communiquer avec la raspberry on peut utiliser Putty.  
 
-
 ## TP3 - Interface Web sur Raspberry Pi et interface API Rest
 ### Vocabulaire :  
 - __Flask__ : framework web Python avec divers fonctionnalités
@@ -121,7 +120,6 @@ La commande ci-dessus, nous permet de démarrer notre serveur sans debug.
 
 `FLASK_APP=hello.py FLASK_ENV=development flask run --host 0.0.0.0` nous permet de lancer le mode debug et d'ouvrir notre serveur WEB avec un navigateur.  
 
-
 On va créer notre première page selon l’architecture REST (qui utilise la méthode HTML)  
 Comment être RESTful? Pour notre serveur cela signifie :
 - répondre sous forme JSON (Le json est un type de fichier simple à générer et facile à lire et à traiter)
@@ -136,8 +134,6 @@ Voici un exemple de code noue permettant d'instancier des requetes. On y retrouv
 Pour l'ensemble de nos requetes on utilise le fichier json pour l'affichage.  
 Les requetes auront pour but d'être utilisées pour afficher /modifier/donner les valeurs de température et de pression de l'IMU 10 DOF.
 
-
-
 ## TP4 -Pilotage d'actionneur par bus CAN
   
 Nous avons configuré le bus CAN avec un prescaler (for Time Quantum) pour modifier le Baud Rate et l'approcher de 500kbit/s. Or nous avons remarqué plus tard qu'il fallait se mettre exactement à 500 kbit/s pour que la trame CAN soit transmise.  
@@ -147,14 +143,13 @@ Nous avons récupéré la trame du CAN sur l'oscilloscope avec une qualité faib
 ## TP5 - Intégration I²C - Serial - REST - CAN
 
 Nous n'avons pas pu intégrer l'ensemble des élèments ensemble par manque de temps mais également car certaines de nos parties n'étaient pas totalement complètes :  
-
-__I2C__ :
+#### I2C :
 - Nous n'obtenions que une température (constance tout du long de nos tests)
-- Nous n'avons pas crée les fonctions pour la lecture des commandes GET_T, GET_P etc 
-__Interface Web__ : 
-- notre inferface et nos requetes avaient un bon fonctionnement, et aurait pu être utilisée pour d'autres situations 
-- nous n'avons pas cherché à aller plus loin en créant une FASTAPI
-__CAN__ :
-- le servomoteur recevait bien les commandes du CAN et il y répondait correctement.
+- Nous n'avons pas crée les fonctions pour la lecture des commandes GET_T, GET_P etc  
+#### Interface Web : 
+- Notre inferface et nos requetes avaient un bon fonctionnement, et auraient pu être utilisées pour d'autres situations 
+- Nous n'avons pas cherché à aller plus loin en créant une FASTAPI  
+#### CAN :
+- Le servomoteur recevait bien les commandes du CAN et il y répondait correctement.
 - Nous n'avont pas eu le temps d'envoyer les valeurs de l'IMU 10DOF vers le servomoteur 
 
